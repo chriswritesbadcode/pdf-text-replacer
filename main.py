@@ -1,30 +1,43 @@
 import tkinter as tk
-from tkinter import filedialog
+window = tk.Tk()
+from tkinter import filedialog, ttk
 from constants import *
 from utils import *
 
-window = tk.Tk()
 
 window.title('PDF Text Replacer')
 window.iconbitmap('favico.ico')
-window.resizable(False,False)
+window.resizable(False, False)
 
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 position_top = int(screen_height / 2 - WINDOW_SIZE / 2)
 position_right = int(screen_width / 2 - WINDOW_SIZE / 2)
 window.geometry(f'{WINDOW_SIZE}x{WINDOW_SIZE}+{position_right}+{position_top}')
-window.protocol('WM_DELETE_WINDOW', lambda: on_close(window))
+# window.protocol('WM_DELETE_WINDOW', lambda: on_close(window))
 
-main_frame = tk.Frame(window, padx=FRAME_PAD, pady=FRAME_PAD)
-main_frame.pack(expand=True, fill=tk.BOTH)
-main_frame.configure(bg=WINDOW_BG)
+mainFrame = tk.Frame(window, padx=FRAME_PAD, pady=FRAME_PAD)
+mainFrame.pack(expand=True, fill=tk.BOTH)
+mainFrame.configure(bg=WINDOW_BG)
 
-generate_button = tk.Button(main_frame,
-                   text='Generate new PDF',
-                   command=lambda: generate_pdf(filedialog.askopenfilename(title='Select input PDF', filetypes=[('PDF', '.pdf')]), 'modified.pdf'))
+fileLabel = tk.Label(mainFrame, text='PDF template')
+fileBtn = tk.Button(mainFrame, text='Choose', command=lambda: setNewFilePath(chosenFileLabel, generateBtn))
+chosenFileLabel = tk.Label(mainFrame, text='No file chosen!')
 
-generate_button.pack()
+settings.chosenTemplate.set(TEMPLATES_MENU[0])
+templateChoosingMenu = ttk.OptionMenu(mainFrame, settings.chosenTemplate, *TEMPLATES_MENU, command=lambda x: onTemplateChange(chosenTemplateLabel, generateBtn))
+chosenTemplateLabel = tk.Label(mainFrame, text=f'Chosen Template: {settings.chosenTemplate.get()}')
 
+generateBtn = tk.Button(mainFrame, text='Generate PDF', state=tk.DISABLED, command=openGenerateMenu)
+
+# PACK THEM BITCHEZ UP
+fileLabel.pack()
+fileBtn.pack()
+chosenFileLabel.pack()
+
+generateBtn.pack()
+
+templateChoosingMenu.pack()
+chosenTemplateLabel.pack()
 
 window.mainloop()
